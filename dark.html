@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#06142e">
   <title>气候变化预估 · 暗色复刻版 · 浙江气候综合业务系统</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="styles.css?v=20261110-standalone">
-  <script src="app.js?v=20261110" defer></script>
+  <link rel="stylesheet" href="styles.css?v=20261110-viewer">
+  <script src="app.js?v=20261110-viewer" defer></script>
 </head>
 <body data-version="dark">
   <header class="system-header" aria-label="浙江气候综合业务系统">
@@ -18,11 +18,9 @@
     <time id="system-time"></time>
   </header>
   <main class="workspace" id="topics" aria-label="气候变化预估全部图件"></main>
-  <footer class="page-footer"><span>浙江气候综合业务系统</span><span>气候变化预估</span></footer>
-  <dialog class="viewer" id="viewer" aria-labelledby="viewer-title">
-    <div class="viewer-heading"><div><span id="viewer-index"></span><h2 id="viewer-title"></h2></div><button id="viewer-close" class="outline-button">关闭 <kbd>Esc</kbd></button></div>
+  <dialog class="viewer" id="viewer" aria-labelledby="viewer-title" aria-describedby="viewer-subtitle">
+    <div class="viewer-heading"><div><h2 id="viewer-title"></h2><p id="viewer-subtitle"></p></div><button id="viewer-close" class="viewer-close" aria-label="关闭图片预览">×</button></div>
     <div class="viewer-body"><div class="viewer-image-area"><img id="viewer-image" alt=""></div></div>
-    <div class="viewer-footer"><span id="viewer-caption"></span><div><button class="outline-button" id="zoom-out" aria-label="缩小图片">−</button><button class="outline-button" id="zoom-reset">适应窗口</button><button class="outline-button" id="zoom-in" aria-label="放大图片">＋</button><a class="outline-button" id="compare-original" target="_blank" rel="noopener">对照原图 ↗</a><a class="download-button" id="download-image" download>下载复刻图</a></div></div>
   </dialog>
 </body>
 </html>

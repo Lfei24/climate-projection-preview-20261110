@@ -23,33 +23,21 @@ const $ = id => document.getElementById(id);
 const dark = document.body.dataset.version === 'dark';
 const imageSource = id => dark ? `assets/dark/figure-${id}.svg` : `assets/figure-${id}.jpg`;
 const viewer = $('viewer');
-let zoom = 1;
 let previousFocus;
 
 $('topics').innerHTML = groups.map((group,index) => `<section class="topic panel" id="${group.id}" aria-labelledby="title-${group.id}"><header class="topic-heading"><div><span class="topic-number">${String(index+1).padStart(2,'0')}</span><h2 id="title-${group.id}">${group.name}</h2><span class="topic-subtitle">${group.subtitle}</span></div><span class="topic-period">${group.period}年</span></header><div class="topic-figures ${group.figures.length===1?'single':''}">${group.figures.map(id=>{const figure=figures.find(item=>item.id===id);return `<figure class="figure-card" data-figure="${id}"><figcaption><span class="figure-number">图${String(id).padStart(2,'0')}</span><h3>${figure.region}</h3><span class="figure-period">${group.period}年</span></figcaption><button class="figure-open" data-open="${id}" aria-label="放大查看：${figure.title}"><img src="${imageSource(id)}" alt="${figure.title}" width="${figure.width}" height="${figure.height}" loading="eager"><span class="enlarge-label">放大查看 ↗</span></button></figure>`;}).join('')}</div></section>`).join('');
 
-function updateZoom() {
-  $('viewer-image').style.width = `${zoom*100}%`;
-  $('viewer-image').style.height = `${zoom*100}%`;
-  $('zoom-reset').textContent = zoom===1?'适应窗口':`${Math.round(zoom*100)}% · 还原`;
-  $('zoom-out').disabled = zoom<=1;
-  $('zoom-in').disabled = zoom>=3;
-}
 function openFigure(id) {
   const figure=figures.find(item=>item.id===id);
   if(!figure) return;
   const group=groups.find(item=>item.figures.includes(id));
+  const [region,scenario]=figure.region.split(' · ');
   previousFocus=$('topics').querySelector(`[data-open="${id}"]`);
   $('viewer-image').src=imageSource(id);
   $('viewer-image').alt=figure.title;
-  $('viewer-title').textContent=figure.title;
-  $('viewer-index').textContent=`图${String(id).padStart(2,'0')} · ${dark?'暗色视觉复刻':'原始图件'}`;
-  $('viewer-caption').textContent=`${figure.region}　｜　${group.period}年`;
-  $('download-image').href=imageSource(id);
-  $('download-image').download=`图${id}-${figure.title}${dark?'-暗色复刻.svg':'.jpg'}`;
-  if(dark) $('compare-original').href=`assets/figure-${id}.jpg`;
-  zoom=1;
-  updateZoom();
+  $('viewer-title').textContent=`${group.name}-${group.subtitle.replace(/^浙江省/,'')}`;
+  $('viewer-subtitle').textContent=`${region}-${group.period}年${scenario?` · ${scenario}`:''}`;
+  document.documentElement.classList.add('viewer-open');
   if(!viewer.open) viewer.showModal();
   $('viewer-close').focus();
 }
@@ -58,14 +46,15 @@ $('topics').addEventListener('click',event=>{
   if(button) openFigure(Number(button.dataset.open));
 });
 $('viewer-close').addEventListener('click',()=>viewer.close());
-viewer.addEventListener('close',()=>previousFocus?.focus({preventScroll:true}));
+viewer.addEventListener('close',()=>{
+  if(viewer.open) return;
+  document.documentElement.classList.remove('viewer-open');
+  previousFocus?.focus({preventScroll:true});
+});
 viewer.addEventListener('click',event=>{
   const rect=viewer.getBoundingClientRect();
   if(event.target===viewer&&(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)) viewer.close();
 });
-$('zoom-in').addEventListener('click',()=>{zoom=Math.min(3,+(zoom+.25).toFixed(2));updateZoom();});
-$('zoom-out').addEventListener('click',()=>{zoom=Math.max(1,+(zoom-.25).toFixed(2));updateZoom();});
-$('zoom-reset').addEventListener('click',()=>{zoom=1;updateZoom();});
 function applyAddressState() {
   const match=location.hash.match(/^#figure-(\d+)$/);
   if(match && figures.some(item=>item.id===Number(match[1]))) openFigure(Number(match[1]));
